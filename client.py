@@ -29,10 +29,10 @@ if msg == '*':
     send(DISCONNECT_MESSAGE)
 elif msg == "start":
     while True:
-        re = client.recv(2048).decode(FORMAT)
-        print(re)
+        question = client.recv(2048).decode(FORMAT)
         time_left = client.recv(1024).decode(FORMAT)
         print(f"you have {time_left} seconds")
+        print(question)
         answer=input("type your answer: ")
         if answer == "*":
             send(DISCONNECT_MESSAGE)
