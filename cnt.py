@@ -12,6 +12,9 @@ DavidFont = pygame.font.SysFont('David', 26)
 
 BACKGROND = pygame.image.load(os.path.join('Assets', 'background.jpg'))
 
+FPS = 1
+
+
 HEADER = 64
 PORT = 5050
 FORMAT = 'utf-8'
@@ -34,25 +37,27 @@ def send(msg):
     print(re)
 
 msg = input('to start, type start. to disconnect press * ')
-send(msg)
 if msg == '*':
     send(DISCONNECT_MESSAGE)
+else:
+    send(msg)
 
 
 
-def round1(message, submit):
+def round1(message):
+    WIN.blit(BACKGROND, (0, 0))
     question = client.recv(1024).decode(FORMAT)
     time_left = client.recv(1024).decode(FORMAT)
     question = DavidFont.render(question, 1, (0, 0, 0))
     time_left = DavidFont.render(time_left, 1, (0, 0, 0))
-    answer = DavidFont.render(message, 1, (0, 0, 0))
+    answer = DavidFont.render(f"your answer: {message}", 1, (0, 0, 0))
     WIN.blit(time_left, (10, 10))
     WIN.blit(question, (10, 100))
-    WIN.blit(f"your answer: {answer}")
+    WIN.blit(answer, (200, 200))
     pygame.display.update()
-    if answer == "*":
+    if message == "*":
         send(DISCONNECT_MESSAGE)
-    if submit == True:
+    elif message[-1] == ':':
         client.send(answer.encode())
         re = client.recv(2048).decode(FORMAT)
         re = DavidFont.render(re, 1, (0, 0, 0))
@@ -63,13 +68,14 @@ def round1(message, submit):
 def main():
     run = True
     round_num = 1
-    message = ''
+    message = ' '
+    clock = pygame.time.Clock()
     while run:
-        submit = False
+        clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == DISCONNECT_MESSAGE:
                 run = False
-            if event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     message += 'a'
                 elif event.key == pygame.K_b:
@@ -80,15 +86,11 @@ def main():
                     message += 'd'
                 elif event.key == pygame.K_e:
                     message += 'e'
-    WIN.blit(BACKGROND, (0, 0))
-    round1(message, submit)
-    pygame.display.update()
+        WIN.blit(BACKGROND, (0, 0))
+        round1(message)
+        pygame.display.update()
 
 
-if __name__ =='__main__' and msg == "start":
+if __name__ =='__main__':
     main()
  
-
-
-
-print("Hello World")
